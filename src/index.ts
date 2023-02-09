@@ -7,8 +7,10 @@ export function defineConfig (config: Variants) {
   return config
 }
 
+export const key = 'ancestorVariants'
+
 export const plugin = createPlugin(({ addVariant, theme }) => {
-    const narrowed = narrow(theme('ancestorVariants', []))
+    const narrowed = narrow(theme(key, []))
 
     for (const [variant, selector] of narrowed) {
       addVariant(variant, `:is(${selector} &)`)
