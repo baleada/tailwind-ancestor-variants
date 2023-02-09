@@ -3,8 +3,8 @@ import createPlugin from 'tailwindcss/plugin'
 export type Variants = string[] | VariantSelectorTuple[]
 export type VariantSelectorTuple = [variant: string, selector: string]
 
-export function defineAncestorVariants (variants: Variants) {
-  return variants
+export function defineConfig (config: Variants) {
+  return config
 }
 
 export const plugin = createPlugin(({ addVariant, theme }) => {
