@@ -7,6 +7,10 @@ export function defineConfig (config: Variants) {
   return config
 }
 
+export function toTheme (config: Variants) {
+  return { [key]: config }
+}
+
 export const key = 'ancestorVariants'
 
 export const plugin = createPlugin(({ addVariant, theme }) => {
