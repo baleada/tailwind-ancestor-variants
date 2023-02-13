@@ -4,14 +4,20 @@ export type AncestorVariantsOptions = {
   ancestorIdentifier?: string
 }
 
-export type Variants = (string | VariantSelectorTuple)[]
-export type VariantSelectorTuple = [variant: string, selector: string]
+export type AncestorVariants = (string | AncestorVariantTuple | AncestorVariantDescriptor)[]
+export type AncestorVariantTuple = [variant: string, selector: string]
+export type AncestorVariantDescriptor = {
+  variant: string,
+  selector: string,
+  disableSelector?: string,
+  specificity?: 0 | 1,
+}
 
-export function defineConfig (config: Variants) {
+export function defineConfig (config: AncestorVariants) {
   return config
 }
 
-export function toTheme (config: Variants) {
+export function toTheme (config: AncestorVariants) {
   return { [key]: config }
 }
 
@@ -28,19 +34,35 @@ export const plugin = createPlugin.withOptions((options: AncestorVariantsOptions
   const { ancestorIdentifier } = { ...defaultOptions, ...options }
 
   return ({ addVariant, theme }) => {
-      const narrowed = narrow(theme(key, []))
+    const narrowed = narrow(theme(key, []))
 
-      for (const [variant, selector] of narrowed) {
-        addVariant(variant, `:is(${ancestorIdentifier}${selector} &)`)
-        addVariant(`not-${variant}`, `:is(${ancestorIdentifier}:not(${selector}) &)`)
+    for (const { variant, selector, disableSelector, specificity } of narrowed) {
+      const fn = specificity === 0 ? 'where' : 'is'
+
+      if (disableSelector) {
+        addVariant(variant, `:${fn}(:where(${ancestorIdentifier})${selector} &:where(:not(${disableSelector}):not(${disableSelector} *)))`)
+        addVariant(`not-${variant}`, `:${fn}(:where(${ancestorIdentifier}):not(${selector}) &:where(:not(${disableSelector}):not(${disableSelector} *)))`)
+        continue
       }
+
+      addVariant(variant, `:${fn}(:where(${ancestorIdentifier})${selector} &)`)
+      addVariant(`not-${variant}`, `:${fn}(:where(${ancestorIdentifier}):not(${selector}) &)`)
+    }
   }
 })
 
-function narrow (variants: Variants) {
+function narrow (variants: AncestorVariants): AncestorVariantDescriptor[] {
   return variants.map(
-    variantOrTuple => Array.isArray(variantOrTuple)
-      ? variantOrTuple
-      : [variantOrTuple, `.${variantOrTuple}`] as VariantSelectorTuple
+    variantOrTupleOrDescriptor => {
+      if (typeof variantOrTupleOrDescriptor === 'string') {
+        return { variant: variantOrTupleOrDescriptor, selector: `.${variantOrTupleOrDescriptor}` }
+      }
+
+      if (Array.isArray(variantOrTupleOrDescriptor)) {
+        return { variant: variantOrTupleOrDescriptor[0], selector: variantOrTupleOrDescriptor[1] }
+      }
+      
+      return variantOrTupleOrDescriptor
+    }
   )
 }
