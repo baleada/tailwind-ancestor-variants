@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+</head>
+<body>
+  <div class="flex w-full max-w-prose flex-col gap-6 p-6">
+    <div class="flex flex-col gap-2">
+      <code>Stacked variants add specificity</code>
+      <div class="ancestor user theme-1 browser">
+        <div class="flex gap-2">
+          <div class="bg-blue-500 user:theme-1:browser:bg-red-500 rounded h-6 w-6"></div>
+          <div>Should be red</div>
+        </div>
+      </div>
+    </div>
+  
+    <div class="flex flex-col gap-2">
+      <code>Stacked variants don't apply unless all conditions match</code>
+      <div class="ancestor anon theme-1 browser">
+        <div class="flex gap-2">
+          <div class="bg-orange-500 user:theme-1:browser:bg-red-500 rounded h-6 w-6"></div>
+          <div>Should be orange</div>
+        </div>
+      </div>
+    </div>
+  
+    <div class="flex flex-col gap-2">
+      <code>Combinatorial (order doesn't matter)</code>
+      <div class="ancestor user theme-1 browser">
+        <div class="flex gap-2">
+          <div class="browser:theme-1:user:bg-yellow-500 rounded h-6 w-6"></div>
+          <div>Should be yellow</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="flex flex-col gap-2">
+      <code>Can be negated</code>
+      <div class="ancestor user theme-1 browser">
+        <div class="flex gap-2">
+          <div class="not-theme-2:bg-green-500 rounded h-6 w-6"></div>
+          <div>Should be green</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="flex flex-col gap-2">
+      <code>Negated variants are combinatorial (order doesn't matter)</code>
+      <div class="ancestor user admin theme-1 theme-2 browser">
+        <div class="flex gap-2">
+          <div class="not-theme-3:not-anon:not-native:bg-blue-500 rounded h-6 w-6"></div>
+          <div>Should be blue</div>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="flex flex-col gap-2">
+      <code>Optionally disableable</code>
+      <div class="ancestor typography">
+        <div class="flex flex-col gap-2">
+          <div class="flex gap-2">
+            <div class="t:bg-indigo-500 rounded h-6 w-6"></div>
+            <div>Should be indigo</div>
+          </div>
+          <div class="flex gap-2">
+            <div class="not-typography t:bg-indigo-500 ring-1 ring-inset ring-gray-600 rounded h-6 w-6"></div>
+            <div>Should be transparent</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="flex flex-col gap-2">
+      <code>Disabling affects all descendants</code>
+      <div class="ancestor typography">
+        <div class="flex flex-col gap-2">
+          <div class="flex gap-2">
+            <div class="t:bg-violet-500 ring-1 ring-inset ring-gray-600 rounded h-6 w-6"></div>
+            <div>Should be violet</div>
+          </div>
+          <div class="not-typography flex gap-2">
+            <div class="t:bg-indigo-500 ring-1 ring-inset ring-gray-600 rounded h-6 w-6"></div>
+            <div>Should be transparent</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <code>Optionally 0 specificity</code>
+      <div class="ancestor typography">
+        <div class="flex flex-col gap-2">
+          <div class="flex gap-2">
+            <div class="t:bg-indigo-500 bg-transparent ring-1 ring-inset ring-gray-600 rounded h-6 w-6"></div>
+            <div>Should be transparent</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script type="module" src="tests/stubs/index.css"></script>
+</body>
+</html>
